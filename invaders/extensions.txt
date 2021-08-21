@@ -1,0 +1,12 @@
+Extension One: Sound
+
+For this extension, we implemented sounds for the ship shooting, the aliens getting destroyed, and the ship getting destroyed. When the 
+ship shoots, the pew1.wav file is played. When the aliens or the ship are destroyed, the blast1.wav file is played. We created the sound object in models.py with the attributes source and volume. Then, in wave.py, we created and initialized a _firesound attribute and a _deathsound attribute with the Sound() constructor, with the pew1.wav and blast1.wav sound files, respectively. Next, we played the _firesound object in the playerbolts() method and the _deathsound object in the shipcollide() and aliencollide() methods. For turning the sounds on and off, we implemented buttons to press in app.py; these buttons are 'v' and 'b' respectively. The text that specifies how to control the sound is displayed on the start menu. 
+
+Extension Two: Multiple Waves
+
+When you clear a wave of aliens, another wave appears at a higher speed. There are a total of three waves. In app.py, we created and initialized a _rounds attribute. In STATE_COMPLETE, we keep track of how many rounds have gone by. If three rounds have not gone by, the state goes to STATE_NEWWAVE. Once all three rounds have gone by and the player has never lost three lives within one of the rounds, the player wins and the app continues as normal. We created a STATE_LOSE state that has the constant value of 6. This state keeps track of how many lives the player has left; if the number of lives is 0, then the game is lost and the app continues as normal. In order to increase the speed of the aliens' movement, we modified the Wave() constructor to take alienspeed as an argument. This way, every time we set the state to STATE_NEWWAVE, we contructed a the wave with a smaller speed than the previous. 
+
+Extension Three: Random Aliens Firing
+
+Normally, only the bottom-most aliens are firing, but we modified the game so that the aliens fire randomly from any row. We created an alienbolts() method in wave.py that has three parameters: self, a, b. 'a' and 'b' are randomly generated numbers that generate after each update. To find which alien to shoot, the randomly generated numbers are used as indices for the nested list of alien objects. This extension increases the difficulty of the game because of the unpredictable manner in which the aliens are shooting.   

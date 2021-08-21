@@ -80,7 +80,6 @@ class Wave(object):
     _alienspeed: the speed of the aliens marching [int]
     """
 
-
     # GETTERS AND SETTERS (ONLY ADD IF YOU NEED THEM)
     def getAliens(self):
         """Returns the value of the hidden attribute _aliens"""
@@ -92,7 +91,7 @@ class Wave(object):
 
     def setShip(self, value):
         """Modifies the value of the hidden attribute _ship"""
-        assert isinstance(value,Ship)
+        assert isinstance(value, Ship)
         self._ship = value
 
     def getDefense(self):
@@ -133,11 +132,12 @@ class Wave(object):
         """
         self._aliens = self.alienrows()
         self._ship = self.player()
-        self._dline = GPath(points = [0, DEFENSE_LINE, GAME_WIDTH,DEFENSE_LINE], linecolor = 'black')
+        self._dline = GPath(
+            points=[0, DEFENSE_LINE, GAME_WIDTH, DEFENSE_LINE], linecolor='black')
         self._time = 0
         self._right = True
         self._bolts = []
-        self._rate = random.randint(1,BOLT_RATE)
+        self._rate = random.randint(1, BOLT_RATE)
         self._steps = 0
         self._lives = 3
         self._win = False
@@ -169,8 +169,8 @@ class Wave(object):
         Parameter time: The time in seconds since last update
         Precondition: time is a number (int or float)
         """
-        rand1 = random.randint(0,ALIEN_ROWS-1)
-        rand2 = random.randint(0,len(self._aliens)-1)
+        rand1 = random.randint(0, ALIEN_ROWS-1)
+        rand2 = random.randint(0, len(self._aliens)-1)
         if self._right == True:
             self.aliensmoveright(time)
         if self._right == False:
@@ -239,7 +239,8 @@ class Wave(object):
             for y in range(ALIEN_ROWS):
                 num_images = y // 2
                 which_image = num_images % 3
-                alien = Alien(xcoord, ycoord, ALIEN_WIDTH, ALIEN_HEIGHT, ALIEN_IMAGES[which_image])
+                alien = Alien(xcoord, ycoord, ALIEN_WIDTH,
+                              ALIEN_HEIGHT, ALIEN_IMAGES[which_image])
                 col.append(alien)
                 ycoord = ycoord + ALIEN_HEIGHT + ALIEN_V_SEP
             ycoord = a - b
@@ -288,7 +289,7 @@ class Wave(object):
         """
         xcoord = GAME_WIDTH / 2
         ycoord = SHIP_BOTTOM + .5*SHIP_HEIGHT
-        player = Ship(xcoord,ycoord,SHIP_WIDTH,SHIP_HEIGHT,'ship.png')
+        player = Ship(xcoord, ycoord, SHIP_WIDTH, SHIP_HEIGHT, 'ship.png')
         return player
 
     def aliensmoveright(self, time):
@@ -346,11 +347,12 @@ class Wave(object):
             self._firesound.play()
             xcoord = self._ship.x
             ycoord = self._ship.y + .5*SHIP_HEIGHT
-            bolt = Bolt(xcoord, ycoord, BOLT_WIDTH, BOLT_HEIGHT, 'red', BOLT_SPEED)
+            bolt = Bolt(xcoord, ycoord, BOLT_WIDTH,
+                        BOLT_HEIGHT, 'red', BOLT_SPEED)
             self._bolts.append(bolt)
             return self._bolts
 
-    def alienbolts(self,a,b):
+    def alienbolts(self, a, b):
         """
         Returns, creates, and identifies the bolts shot by the aliens. The bolts are fired from
         the alien's x-coordinate and y-coordinate.
@@ -370,10 +372,11 @@ class Wave(object):
             if alien != None:
                 xcoord = alien.x
                 ycoord = alien.y
-                bolt = Bolt(xcoord, ycoord, BOLT_WIDTH, BOLT_HEIGHT, 'green', -BOLT_SPEED)
+                bolt = Bolt(xcoord, ycoord, BOLT_WIDTH,
+                            BOLT_HEIGHT, 'green', -BOLT_SPEED)
                 self._bolts.append(bolt)
         self._steps = 0
-        self._rate = random.randint(1,BOLT_RATE)
+        self._rate = random.randint(1, BOLT_RATE)
         return self._bolts
 
     def del_player_bolt(self):
@@ -418,10 +421,10 @@ class Wave(object):
                     for z in range(len(self._aliens[y])):
                         alien = self._aliens[y][z]
                         if alien != None and len(self._bolts) > x:
-                            a = alien.contains((x1,y1))
-                            b = alien.contains((x2,y2))
-                            c = alien.contains((x3,y3))
-                            d = alien.contains((x4,y4))
+                            a = alien.contains((x1, y1))
+                            b = alien.contains((x2, y2))
+                            c = alien.contains((x3, y3))
+                            d = alien.contains((x4, y4))
                             if a or b or c or d:
                                 collided.append(x)
                                 ylist.append(y)
@@ -452,10 +455,10 @@ class Wave(object):
                 y4 = y3
                 ship = self._ship
                 if ship != None and len(self._bolts) > x:
-                    a = ship.contains((x1,y1))
-                    b = ship.contains((x2,y2))
-                    c = ship.contains((x3,y3))
-                    d = ship.contains((x4,y4))
+                    a = ship.contains((x1, y1))
+                    b = ship.contains((x2, y2))
+                    c = ship.contains((x3, y3))
+                    d = ship.contains((x4, y4))
                     if a or b or c or d:
                         collided.append(x)
         collided.reverse()

@@ -6,9 +6,9 @@ is no need for any additional classes in this module.  If you need more classes,
 the time they belong in either the wave module or the models module. If you are unsure
 about where a new class should go, post a question on Piazza.
 
-# Mahin Chowdhury mac568
-  William Lee wl433
-# 12/4/18
+# Mahin Chowdhury 
+# NetID: mac568
+# Completed on: 12/4/18
 """
 from consts import *
 from game2d import *
@@ -90,12 +90,13 @@ class Invaders(GameApp):
         """
         self._state = 0
         self._wave = None
-        self._text = self._starttext()
+        if self._state == STATE_INACTIVE:
+            self._text = self._starttext()
         self._rounds = 3
-        if self._state >= 1:
+        if self._state >= 2:
             self._text = None
 
-    def update(self,dt):
+    def update(self, dt):
         """
         Animates a single frame in the game.
 
@@ -114,6 +115,9 @@ class Invaders(GameApp):
         message on the screen. The application remains in this state so long as the
         player never presses a key.  In addition, this is the state the application
         returns to when the game is over (all lives are lost or all aliens are dead).
+
+        STATE_INSTRUCTIONS: This is the state after the player presses the key to start
+        the game. Here, the user can view the instructions and premise of the game. 
 
         STATE_NEWWAVE: This is the state creates a new wave and shows it on the screen.
         The application switches to this state if the state was STATE_INACTIVE in the
@@ -144,48 +148,43 @@ class Invaders(GameApp):
         Precondition: dt is a number (int or float)
         """
         # Determine what the current state is
-        #Process the states. Send to helper methods
+        # Process the states. Send to helper methods
         if self._state == STATE_INACTIVE:
             self._rounds = 3
-            self.issdown()
-            self.isvdown()
-            self.isbdown()
+            self.ispdown()
+            self.triggermute()
         if self._state == STATE_NEWWAVE:
             self.new_helper()
         if self._state == STATE_ACTIVE:
             self.active_helper(dt)
         if self._state == STATE_PAUSED:
-            self.isvdown()
+            self.triggermute()
             self.iscdown()
-            self.isbdown()
         if self._state == STATE_CONTINUE:
-            self.isvdown()
-            self.isbdown()
+            self.triggermute()
             self._wave.update(dt)
             self._state = STATE_ACTIVE
         if self._state == STATE_COMPLETE:
             self.complete_helper()
         if self._state == STATE_LOSE:
-            self.isvdown()
-            self.isbdown()
+            self.triggermute()
             self.ishdown()
 
     def new_helper(self):
         """
-        STATE_NEWWAVE: This is the state creates a new wave and shows it on the screen.
+        STATE_NEWWAVE: This is the state that creates a new wave and shows it on the screen.
         The application switches to this state if the state was STATE_INACTIVE in the
         previous frame, and the player pressed a key. This state only lasts one animation
         frame before switching to STATE_ACTIVE.
         """
         #self._wave = Wave(ALIEN_SPEED)
-        self.isvdown()
-        self.isbdown()
+        self.triggermute()
         if self._rounds == 3:
             self._wave = Wave(ALIEN_SPEED)
         if self._rounds == 2:
-            self._wave = Wave(.6*ALIEN_SPEED)
+            self._wave = Wave(.3*ALIEN_SPEED)
         if self._rounds == 1:
-            self._wave = Wave(.4*ALIEN_SPEED)
+            self._wave = Wave(.1*ALIEN_SPEED)
         self._state = STATE_ACTIVE
 
     def active_helper(self, dt):
@@ -196,8 +195,7 @@ class Invaders(GameApp):
         like the subcontroller example in lecture.
         """
         self._wave.update(dt)
-        self.isvdown()
-        self.isbdown()
+        self.triggermute()
         if self._wave.getShip() != None:
             if self.input.is_key_down('left') and self._wave.getShip().x >= .5*SHIP_WIDTH:
                 self._wave.getShip().x -= SHIP_MOVEMENT
@@ -223,8 +221,7 @@ class Invaders(GameApp):
             self._rounds -= 1
         if self._rounds != 0:
             self._state = STATE_NEWWAVE
-        self.isvdown()
-        self.isbdown()
+        self.triggermute()
         self.ishdown()
 
     def draw(self):
@@ -241,8 +238,6 @@ class Invaders(GameApp):
         """
         if self._state == STATE_INACTIVE:
             self._text.draw(self.view)
-            self.soundOff().draw(self.view)
-            self.soundOn().draw(self.view)
         if self._state >= 1 and self._wave != None:
             self._wave.draw(self.view)
         if self._state == STATE_PAUSED:
@@ -264,26 +259,50 @@ class Invaders(GameApp):
         Creates the text specifying how to start the game. Should be positioned
         in the center of the screen.
         """
-        xcoord = GAME_WIDTH/2
-        ycoord = GAME_HEIGHT/2
-        s = GLabel(text = "Press 'S' to Play", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
+        xcoord = 0.85 * GAME_WIDTH/2
+        ycoord = 1.2 * GAME_HEIGHT/2
+        s = GLabel(text="\n \
+                           SPACE INVADERS \n \
+                           \n \
+                           There are aliens arranged in rows and columns. At the bottom \n \
+                           of the screen is the player's ship. There is also a horizontal \n \
+                           line at the bottom of the screen. This is the defense line. If \n \
+                           the aliens make it past this line, they have successfully \n \
+                           invaded and you have lost the game. \n \
+                           \n \
+                           While the game is being played, you can press 'M' to mute the game \n \
+                           or you can press 'U' to unmute the game. \n \
+                           \n \
+                           Press 'P' to Play",
+                   font_size=20,
+                   bold=True,
+                   x=xcoord,
+                   y=ycoord)
         return s
 
-    def issdown(self):
+    def ispdown(self):
         """
         Creates the button to press to start the game. Changes the state of the game to active.
         """
         currentkey = self.input.key_count
-        skey = self.input.is_key_down('s')
-        if currentkey > 0 and currentkey < 2 and skey is True:
-            self._state = (self._state + 1) % 5
+        pkey = self.input.is_key_down('p')
+        if currentkey > 0 and currentkey < 2 and pkey is True:
+            # self._state = STATE_INSTRUCTIONS
+            self._state = (self._state + 1) % 6
             return True
+
+    # def ispdown(self):
+    #     """
+    #     Creates the button to press to exit the pause screen. Changes the state of the game to active
+    #     """
+    #     currentkey = self.input.key_count
+    #     pkey = self.input.is_key_down('p')
+    #     if currentkey > 0 and currentkey < 2 and pkey is True:
+    #         self._state = STATE_ACTIVE
 
     def iscdown(self):
         """
-        Creates the button to press to exit the pause screen. Chang
-        es the state of the game to active
+        Creates the button to press to exit the pause screen. Changes the state of the game to active
         """
         currentkey = self.input.key_count
         ckey = self.input.is_key_down('c')
@@ -300,47 +319,19 @@ class Invaders(GameApp):
         if currentkey > 0 and currentkey < 2 and hkey is True:
             self._state = STATE_INACTIVE
 
-    def isvdown(self):
+    def triggermute(self):
         """
         Creates the button to press to mute the volume
         """
         currentkey = self.input.key_count
-        vkey = self.input.is_key_down('v')
-        if currentkey > 0 and currentkey < 2 and vkey is True:
-            self._wave.getfiresound().volume = 0
-            self._wave.getdeathsound().volume = 0
-
-    def isbdown(self):
-        """
-        Creates the button to press to unmute the volume
-        """
-        currentkey = self.input.key_count
-        bkey = self.input.is_key_down('b')
-        if currentkey > 0 and currentkey < 2 and bkey is True:
-            self._wave.getfiresound().volume = 1
-            self._wave.getdeathsound().volume = 1
-
-    def soundOff(self):
-        """
-        Creates the text specifiying how to mute the volume. Should be positioned below
-        the start text on the start menu
-        """
-        xcoord = GAME_WIDTH/2
-        ycoord = DEFENSE_LINE + 100
-        v = GLabel(text = "Press V to Turn Sound Off", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
-        return v
-
-    def soundOn(self):
-        """
-        Creates the text specifying how to unmute the volume. Should be positioned below
-        the 'how to mute' text on the start menu
-        """
-        xcoord = GAME_WIDTH/2
-        ycoord = DEFENSE_LINE + 50
-        v = GLabel(text = "Press B to Turn Sound On", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
-        return v
+        mkey = self.input.is_key_down('m')
+        if currentkey > 0 and currentkey < 2 and mkey is True:
+            if self._wave.getfiresound().volume == 0 and self._wave.getdeathsound().volume == 0:
+                self._wave.getfiresound().volume = 1
+                self._wave.getdeathsound().volume = 1
+            else:
+                self._wave.getfiresound().volume = 0
+                self._wave.getdeathsound().volume = 0
 
     def respawn(self):
         """
@@ -349,9 +340,8 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH / 2
         ycoord = SHIP_BOTTOM + .5*SHIP_HEIGHT
-        player = Ship(xcoord,ycoord,SHIP_WIDTH,SHIP_HEIGHT,'ship.png')
+        player = Ship(xcoord, ycoord, SHIP_WIDTH, SHIP_HEIGHT, 'ship.png')
         return player
-
 
     def pausegame(self):
         """
@@ -360,10 +350,9 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
-        c = GLabel(text = "Press 'C' to Continue", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
+        c = GLabel(text="Press 'C' to Continue", font_size=20, bold=True,
+                   x=xcoord, y=ycoord)
         return c
-
 
     def wingame(self):
         """
@@ -372,10 +361,9 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
-        w = GLabel(text = "You WIN!", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
+        w = GLabel(text="You WIN!", font_size=20, bold=True,
+                   x=xcoord, y=ycoord)
         return w
-
 
     def losegame(self):
         """
@@ -384,10 +372,9 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
-        l = GLabel(text = "You LOSE!", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
+        l = GLabel(text="You LOSE!", font_size=20, bold=True,
+                   x=xcoord, y=ycoord)
         return l
-
 
     def playagain(self):
         """
@@ -395,6 +382,6 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH/2
         ycoord = DEFENSE_LINE + 100
-        h = GLabel(text = "Press 'H' to Play Again", font_size = 20, bold = True,
-                    x = xcoord, y = ycoord)
+        h = GLabel(text="Press 'H' to Play Again", font_size=20, bold=True,
+                   x=xcoord, y=ycoord)
         return h

@@ -14,7 +14,7 @@ brew install python3
 # Install the introcs module. 
 pip3 install introcs 
 
-# Instal the kivy module for the graphics. 
+# Install the kivy module
 pip3 install kivy
 ```
 ### 3. Run the game 

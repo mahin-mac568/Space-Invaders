@@ -4,6 +4,7 @@
 ### 1. Cloning the repository from Git
 ```bash
 git clone https://github.com/mahin-mac568/Space-Invaders.git
+cd Space-Invaders
 ```
 ### 2. Setting up the environment
 

@@ -1,4 +1,4 @@
-# Space-Invaders
+# Space Invaders
 
 ## Quickstart Guide
 ### 1. Cloning the repository from Git

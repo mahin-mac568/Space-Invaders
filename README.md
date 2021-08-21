@@ -16,7 +16,8 @@ pip3 install introcs
 
 # Instal the kivy module for the graphics. 
 pip3 install kivy
-
-# Run the game. 
+```
+### 3. Run the game 
+```
 python3 invaders
 ```

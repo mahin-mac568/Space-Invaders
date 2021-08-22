@@ -1,16 +1,18 @@
 """
-Constants for Alien Invaders
+Constants for Space Invaders
 
-This module global constants for the game Alien Invaders. These constants need to be used
-in the model, the view, and the controller. As these are spread across multiple modules,
-we separate the constants into their own module. This allows all modules to access them.
+This module global constants for the game Spaces Invaders. These constants are used in 
+the model, the view, and the controller. As these are spread across multiple modules, we 
+separate the constants into their own module. This allows all modules to access them.
 
-# Mahin Chowdhury mac568
-  William Lee wl433
+# Mahin Chowdhury 
+# NetID: mac568
 # 12/4/18
 """
+
 import introcs
 import sys
+
 
 ### WINDOW CONSTANTS (all coordinates are in pixels) ###
 

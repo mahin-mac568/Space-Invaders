@@ -1,10 +1,7 @@
 """
-Primary module for Alien Invaders
+Primary module for Space Invaders
 
-This module contains the main controller class for the Alien Invaders application. There
-is no need for any additional classes in this module.  If you need more classes, 99% of
-the time they belong in either the wave module or the models module. If you are unsure
-about where a new class should go, post a question on Piazza.
+This module contains the main controller class for the Space Invaders application.
 
 # Mahin Chowdhury 
 # NetID: mac568
@@ -15,12 +12,9 @@ from game2d import *
 from wave import *
 
 
-# PRIMARY RULE: Invaders can only access attributes in wave.py via getters/setters
-# Invaders is NOT allowed to access anything in models.py
-
 class Invaders(GameApp):
     """
-    The primary controller class for the Alien Invaders application
+    The primary controller class for the Space Invaders application
 
     This class extends GameApp and implements the various methods necessary for processing
     the player inputs and starting/running a game.
@@ -31,9 +25,9 @@ class Invaders(GameApp):
 
         Method draw displays the Play object and any other elements on screen
 
-    Because of some of the weird ways that Kivy works, you SHOULD NOT create an
-    initializer __init__ for this class.  Any initialization should be done in
-    the start method instead.  This is only for this class.  All other classes
+    Because of some of the weird ways that Kivy works, I do NOT create an
+    initializer __init__ for this class. Any initialization is done in the 
+    start method instead. This is only for this class.  All other classes
     behave normally.
 
     Most of the work handling the game is actually provided in the class Wave.
@@ -64,29 +58,23 @@ class Invaders(GameApp):
     For a complete description of how the states work, see the specification for the
     method update.
 
-    You may have more attributes if you wish (you might want an attribute to store
-    any score across multiple waves). If you add new attributes, they need to be
-    documented here.
-
     LIST MORE ATTRIBUTES (AND THEIR INVARIANTS) HERE IF NECESSARY
 
     _rounds: the number of waves of aliens in one game[int]
 
     """
-    # DO NOT MAKE A NEW INITIALIZER!
 
     # THREE MAIN GAMEAPP METHODS
     def start(self):
         """
         Initializes the application.
 
-        This method is distinct from the built-in initializer __init__ (which you
-        should not override or change). This method is called once the game is running.
-        You should use it to initialize any game specific attributes.
+        This method is distinct from the built-in initializer __init__. This 
+        method is called once the game is running. 
 
-        This method should make sure that all of the attributes satisfy the given
-        invariants. When done, it sets the _state to STATE_INACTIVE and create a message
-        (in attribute _text) saying that the user should press to play a game.
+        This method makes sure that all of the attributes satisfy the given invariants. 
+        When done, it sets the _state to STATE_INACTIVE and create a message (in 
+        attribute _text) saying that the user should press to play a game.
         """
         self._state = 0
         self._wave = None
@@ -98,36 +86,27 @@ class Invaders(GameApp):
 
     def update(self, dt):
         """
-        Animates a single frame in the game.
+        Animates each single frame in the game.
 
-        It is the method that does most of the work. It is NOT in charge of playing the
-        game.  That is the purpose of the class Wave. The primary purpose of this
+        This is the method that does most of the work. It is NOT in charge of playing 
+        the game. That is the job of the class Wave. The primary purpose of this
         game is to determine the current state, and -- if the game is active -- pass
         the input to the Wave object _wave to play the game.
 
-        As part of the assignment, you are allowed to add your own states. However, at
-        a minimum you must support the following states: STATE_INACTIVE, STATE_NEWWAVE,
-        STATE_ACTIVE, STATE_PAUSED, STATE_CONTINUE, and STATE_COMPLETE.  Each one of these
-        does its own thing and might even needs its own helper.  We describe these below.
-
-        STATE_INACTIVE: This is the state when the application first opens.  It is a
-        paused state, waiting for the player to start the game.  It displays a simple
+        STATE_INACTIVE: This is the state when the application first opens. It is a
+        paused state, waiting for the player to start the game. It displays a simple
         message on the screen. The application remains in this state so long as the
-        player never presses a key.  In addition, this is the state the application
+        player never presses a key. In addition, this is the state the application
         returns to when the game is over (all lives are lost or all aliens are dead).
-
-        STATE_INSTRUCTIONS: This is the state after the player presses the key to start
-        the game. Here, the user can view the instructions and premise of the game. 
 
         STATE_NEWWAVE: This is the state creates a new wave and shows it on the screen.
         The application switches to this state if the state was STATE_INACTIVE in the
         previous frame, and the player pressed a key. This state only lasts one animation
         frame before switching to STATE_ACTIVE.
 
-        STATE_ACTIVE: This is a session of normal gameplay.  The player can move the
-        ship and fire laser bolts.  All of this should be handled inside of class Wave
-        (NOT in this class).  Hence the Wave class should have an update() method, just
-        like the subcontroller example in lecture.
+        STATE_ACTIVE: This is a session of normal gameplay. The player can move the
+        ship and fire laser bolts. All of this is handled inside of class Wave (NOT 
+        in this class). Hence the Wave class has an update() method.
 
         STATE_PAUSED: Like STATE_INACTIVE, this is a paused state. However, the game is
         still visible on the screen.
@@ -141,14 +120,9 @@ class Invaders(GameApp):
 
         STATE_LOSE: The player lost all lives and the game is lost.
 
-        You are allowed to add more states if you wish. Should you do so, you should
-        describe them here.
-
         Parameter dt: The time in seconds since last update
         Precondition: dt is a number (int or float)
         """
-        # Determine what the current state is
-        # Process the states. Send to helper methods
         if self._state == STATE_INACTIVE:
             self._rounds = 3
             self.ispdown()
@@ -168,7 +142,7 @@ class Invaders(GameApp):
             self.complete_helper()
         if self._state == STATE_LOSE:
             self.triggermute()
-            self.ishdown()
+            self.pressplayagain()
 
     def new_helper(self):
         """
@@ -177,22 +151,20 @@ class Invaders(GameApp):
         previous frame, and the player pressed a key. This state only lasts one animation
         frame before switching to STATE_ACTIVE.
         """
-        #self._wave = Wave(ALIEN_SPEED)
         self.triggermute()
         if self._rounds == 3:
             self._wave = Wave(ALIEN_SPEED)
         if self._rounds == 2:
-            self._wave = Wave(.3*ALIEN_SPEED)
+            self._wave = Wave(.2*ALIEN_SPEED)
         if self._rounds == 1:
-            self._wave = Wave(.1*ALIEN_SPEED)
+            self._wave = Wave(.05*ALIEN_SPEED)
         self._state = STATE_ACTIVE
 
     def active_helper(self, dt):
         """
-        STATE_ACTIVE: This is a session of normal gameplay.  The player can move the
-        ship and fire laser bolts.  All of this should be handled inside of class Wave
-        (NOT in this class).  Hence the Wave class should have an update() method, just
-        like the subcontroller example in lecture.
+        STATE_ACTIVE: This is a session of normal gameplay. The player can move the
+        ship and fire laser bolts. All of this is handled inside of class Wave (NOT 
+        in this class). Hence the Wave class has an update() method.
         """
         self._wave.update(dt)
         self.triggermute()
@@ -214,27 +186,26 @@ class Invaders(GameApp):
 
     def complete_helper(self):
         """
-        STATE_COMPLETE: The waves are over, and the game is either won or lost. If three waves
-        of aliens have not been cleared, create a new wave of aliens.
+        STATE_COMPLETE: The three waves are over, and the game is either won or lost. 
+        If three waves of aliens have not been cleared, create a new wave of aliens.
         """
         if self._rounds > 0:
             self._rounds -= 1
         if self._rounds != 0:
             self._state = STATE_NEWWAVE
         self.triggermute()
-        self.ishdown()
+        self.pressplayagain()
 
     def draw(self):
         """
         Draws the game objects to the view.
 
-        Every single thing you want to draw in this game is a GObject.  To draw a GObject
-        g, simply use the method g.draw(self.view).  It is that easy!
+        Every single thing I want to draw in this game is a GObject. To draw a 
+        GObject g, I simply use the method g.draw(self.view).
 
         Many of the GObjects (such as the ships, aliens, and bolts) are attributes in
-        Wave. In order to draw them, you either need to add getters for these attributes
-        or you need to add a draw method to class Wave.  We suggest the latter.  See
-        the example subcontroller.py from class.
+        Wave. In order to draw them, I either need to add getters for these attributes
+        or I need to add a draw method to class Wave. 
         """
         if self._state == STATE_INACTIVE:
             self._text.draw(self.view)
@@ -253,14 +224,12 @@ class Invaders(GameApp):
                 self.losegame().draw(self.view)
                 self.playagain().draw(self.view)
 
-    # HELPER METHODS FOR THE STATES GO HERE
     def _starttext(self):
         """
-        Creates the text specifying how to start the game. Should be positioned
-        in the center of the screen.
+        Creates the text specifying how to start the game.
         """
-        xcoord = 0.85 * GAME_WIDTH/2
-        ycoord = 1.2 * GAME_HEIGHT/2
+        xcoord = 0.825 * GAME_WIDTH/2
+        ycoord = 1.1 * GAME_HEIGHT/2
         s = GLabel(text="\n \
                            SPACE INVADERS \n \
                            \n \
@@ -270,8 +239,13 @@ class Invaders(GameApp):
                            the aliens make it past this line, they have successfully \n \
                            invaded and you have lost the game. \n \
                            \n \
-                           While the game is being played, you can press 'M' to mute the game \n \
-                           or you can press 'U' to unmute the game. \n \
+                           There are three levels. That means you must defeat three waves \n \
+                           of aliens in order to clear the game. Bear in mind, you only \n \
+                           have three lives per wave of aliens... And the enemies get \n \
+                           progressively faster after each level. Tread carefully. \n \
+                           \n \
+                           While the game is being played, you can press 'M' to mute \n \
+                           or unmute the game. \n \
                            \n \
                            Press 'P' to Play",
                    font_size=20,
@@ -282,27 +256,19 @@ class Invaders(GameApp):
 
     def ispdown(self):
         """
-        Creates the button to press to start the game. Changes the state of the game to active.
+        Creates the button to press to start the game. 
+        Changes the state of the game to active.
         """
         currentkey = self.input.key_count
         pkey = self.input.is_key_down('p')
         if currentkey > 0 and currentkey < 2 and pkey is True:
-            # self._state = STATE_INSTRUCTIONS
             self._state = (self._state + 1) % 6
             return True
 
-    # def ispdown(self):
-    #     """
-    #     Creates the button to press to exit the pause screen. Changes the state of the game to active
-    #     """
-    #     currentkey = self.input.key_count
-    #     pkey = self.input.is_key_down('p')
-    #     if currentkey > 0 and currentkey < 2 and pkey is True:
-    #         self._state = STATE_ACTIVE
-
     def iscdown(self):
         """
-        Creates the button to press to exit the pause screen. Changes the state of the game to active
+        Creates the button to press to exit the pause screen. 
+        Changes the state of the game to active.
         """
         currentkey = self.input.key_count
         ckey = self.input.is_key_down('c')
@@ -310,13 +276,13 @@ class Invaders(GameApp):
             self._state = STATE_CONTINUE
             self._wave.setShip(self.respawn())
 
-    def ishdown(self):
+    def pressplayagain(self):
         """
         Creates the botton to press to return to the start menu and play again
         """
         currentkey = self.input.key_count
-        hkey = self.input.is_key_down('h')
-        if currentkey > 0 and currentkey < 2 and hkey is True:
+        pkey = self.input.is_key_down('p')
+        if currentkey > 0 and currentkey < 2 and pkey is True:
             self._state = STATE_INACTIVE
 
     def triggermute(self):
@@ -345,8 +311,7 @@ class Invaders(GameApp):
 
     def pausegame(self):
         """
-        Creates the text specifying how to exit the pause menu. Should be positioned at
-        the center of the screen.
+        Creates the text specifying how to exit the pause menu.
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
@@ -356,8 +321,7 @@ class Invaders(GameApp):
 
     def wingame(self):
         """
-        Creates the text telling the user that he/she has won the game. Should be positioned
-        at the center of the screen.
+        Creates the text telling the user that he/she has won the game.
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
@@ -367,8 +331,7 @@ class Invaders(GameApp):
 
     def losegame(self):
         """
-        Creates the text telling the user that he/she has won the game. Should be positioned
-        at the center of the screen.
+        Creates the text telling the user that he/she has won the game.
         """
         xcoord = GAME_WIDTH/2
         ycoord = GAME_HEIGHT/2
@@ -382,6 +345,6 @@ class Invaders(GameApp):
         """
         xcoord = GAME_WIDTH/2
         ycoord = DEFENSE_LINE + 100
-        h = GLabel(text="Press 'H' to Play Again", font_size=20, bold=True,
+        h = GLabel(text="Press 'P' to Play Again", font_size=20, bold=True,
                    x=xcoord, y=ycoord)
         return h
